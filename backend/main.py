@@ -216,6 +216,19 @@ target_emb_list = ['onlyGen','aihub']#,'cel']#,'oldaihub']
 num = 2
 simswap, opt, crop_size, model, mse, spNorm, logoclass = config()
 
+# PRE-COMPUTE TARGET EMBEDDING
+for target_emb in target_emb_list:
+    closest_idx, furthest_idx = [], []
+
+    print("Target Embbeding:", target_emb)
+    if specific_gender == 'W':
+        asain_face_emb = get_emb(female_emb_dir, target_emb)
+    elif specific_gender == 'M':
+        asain_face_emb = get_emb(male_emb_dir, target_emb)
+    
+    target_id_list = list(asain_face_emb.keys())
+    print("Number of Target Embedding Image: ", len(target_id_list))
+
 # ROUTING
 @app.route('/', defaults = {'path': ''})
 @app.route('/<path:path>')
@@ -236,7 +249,7 @@ def generate():
 
     cv2.imwrite('test.png', image)
 
-    align_crop, id_nonorm = get_embedding_specific_person(image, app, crop_size, model)
+    align_crop, id_nonorm = get_embedding_specific_person(image, simswap, crop_size, model)
     
     return jsonify('good'), 200
 

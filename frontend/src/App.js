@@ -44,27 +44,31 @@ const theme = createTheme({
 const UploadPage = ({ setPath }) => {
     const navigate = useNavigate();
     var newpath = ''
+    var reader = new FileReader();
 
     const onDrop = useCallback(async (files) => {
         setPath(files.map(file => {
             return URL.createObjectURL(file);
         }));
-        
-        const data = new FormData();
-        data.append('image', files[0]);
+
+        reader.onload = async (e) => {
+            e.preventDefault();
+
+            const response = (await fetch('/generate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(e.target.result)
+            }))
+            console.log(await response.json())
+            
+            navigate('/result')
+        }
+
+        reader.readAsDataURL(files[0]);
         
         navigate('/wait');
-
-        const response = (await fetch('/generate', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: data
-        }))
-        console.log(await response.json())
-        
-        navigate('/result')
     }, [setPath, navigate]);
 
     const {getRootProps, getInputProps} = useDropzone({

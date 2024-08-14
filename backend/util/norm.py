@@ -9,11 +9,11 @@ class SpecificNorm(nn.Module):
         """
         super(SpecificNorm, self).__init__()
         self.mean = np.array([0.485, 0.456, 0.406])
-        self.mean = torch.from_numpy(self.mean).float().cuda()
+        self.mean = torch.from_numpy(self.mean).float()
         self.mean = self.mean.view([1, 3, 1, 1])
 
         self.std = np.array([0.229, 0.224, 0.225])
-        self.std = torch.from_numpy(self.std).float().cuda()
+        self.std = torch.from_numpy(self.std).float()
         self.std = self.std.view([1, 3, 1, 1])
 
     def forward(self, x):

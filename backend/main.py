@@ -25,7 +25,7 @@ from parsing_model.model import BiSeNet
 import gc
 import matplotlib.pyplot as plt
 import base64
-import io
+from io import BytesIO
 
 # CONFIGURE LOGGER
 logger = logging.getLogger(__name__)
@@ -94,13 +94,13 @@ def process_crop(spNorm, model, mse, b_align_crop, specific_person_id_nonorm):
     mse_value = mse(b_align_crop_id_nonorm, specific_person_id_nonorm).detach().cpu().numpy()
     return mse_value, b_align_crop_tenor
 
-def get_embedding_specific_person(pic_specific_path, app, crop_size, model):
+def get_embedding_specific_person(image, app, crop_size, model):
     transformer_Arcface = transforms.Compose([
         transforms.ToTensor(),
         transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
     ])
 
-    specific_person_whole = cv2.imread(pic_specific_path)
+    specific_person_whole = image
     try:
         print(specific_person_whole.shape)
     except AttributeError:
@@ -207,6 +207,15 @@ def get_emb(asain_face_emb_dir, target='onlyGen'):
             else: asain_face_emb.update(emb_)
     return asain_face_emb
 
+# CONFIGURE SIMSWAP
+male_emb_dir = ['./output/M/', './output/test_M', './output/celebrity/Male', './output/zzold_aihub']
+female_emb_dir = ['./output/W/', './output/test_W', './output/celebrity/Female', './output/zold_aihub']
+pic_dir = './data/sample/'
+specific_gender = 'M'
+target_emb_list = ['onlyGen','aihub']#,'cel']#,'oldaihub']
+num = 2
+simswap, opt, crop_size, model, mse, spNorm, logoclass = config()
+
 # ROUTING
 @app.route('/', defaults = {'path': ''})
 @app.route('/<path:path>')
@@ -218,19 +227,17 @@ def react_route(path):
 
 @app.route('/generate', methods = ['POST'])
 def generate():
-    logger.info(request.json)
-    logger.info('RECEIVED IMAGE! WAITING FOR 5 SECONDS.')
+    image = request.json
+    image = image.split(';')[1].split(',')[1]
+    image = base64.b64decode(image)
+    image = Image.open(BytesIO(image))
+    image = np.array(image)
+    image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
 
-    try:
-        temp2 = request.files
-        temp3 = request.files['image']
+    cv2.imwrite('test.png', image)
 
-        logger.info(temp2)
-        logger.info(temp3)
-    except Exception as e:
-        print(e)
-
-    time.sleep(5)
+    align_crop, id_nonorm = get_embedding_specific_person(image, app, crop_size, model)
+    
     return jsonify('good'), 200
 
 if __name__ == '__main__':

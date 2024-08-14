@@ -1,0 +1,7 @@
+backend/arcface_model/*
+backend/checkpoints/*
+backend/output/*
+backend/checkpoints.zip
+backend/people/*
+backend/parsing_model/models/*
+backend/insightface_func/models/*

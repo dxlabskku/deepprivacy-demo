@@ -48,7 +48,7 @@ class fsModel(BaseModel):
             torch.backends.cudnn.benchmark = True
         self.isTrain = opt.isTrain
 
-        device = torch.device("cuda:0")
+        device = torch.device('mps')
 
         if opt.crop_size == 224:
             from .fs_networks import Generator_Adain_Upsample, Discriminator

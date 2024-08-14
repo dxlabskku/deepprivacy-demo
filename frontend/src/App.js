@@ -26,7 +26,9 @@ import '@fontsource/roboto/700.css';
 /* CSS Stylesheets */
 import './App.css';
 
-const theme=createTheme({
+const sleep = delay => new Promise(resolve => setTimeout(resolve, delay));
+
+const theme = createTheme({
     palette: {
         text: {
             primary: '#f0f0f0',
@@ -41,10 +43,28 @@ const theme=createTheme({
 
 const UploadPage = ({ setPath }) => {
     const navigate = useNavigate();
+    var newpath = ''
 
-    const onDrop = useCallback(files => {
-        setPath(files.map(file => URL.createObjectURL(file)));
-        navigate('/wait')
+    const onDrop = useCallback(async (files) => {
+        setPath(files.map(file => {
+            return URL.createObjectURL(file);
+        }));
+        
+        const data = new FormData();
+        data.append('image', files[0]);
+        
+        navigate('/wait');
+
+        const response = (await fetch('/generate', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: data
+        }))
+        console.log(await response.json())
+        
+        navigate('/result')
     }, [setPath, navigate]);
 
     const {getRootProps, getInputProps} = useDropzone({

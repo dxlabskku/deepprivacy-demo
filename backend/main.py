@@ -23,6 +23,9 @@ import os
 from util.norm import SpecificNorm
 from parsing_model.model import BiSeNet
 import gc
+import matplotlib.pyplot as plt
+import base64
+import io
 
 # CONFIGURE LOGGER
 logger = logging.getLogger(__name__)
@@ -215,7 +218,20 @@ def react_route(path):
 
 @app.route('/generate', methods = ['POST'])
 def generate():
-    data = request.files['image']
+    logger.info(request.json)
+    logger.info('RECEIVED IMAGE! WAITING FOR 5 SECONDS.')
+
+    try:
+        temp2 = request.files
+        temp3 = request.files['image']
+
+        logger.info(temp2)
+        logger.info(temp3)
+    except Exception as e:
+        print(e)
+
+    time.sleep(5)
+    return jsonify('good'), 200
 
 if __name__ == '__main__':
     app.run(host = '0.0.0.0', port = 5001, ssl_context = 'adhoc', debug = True)

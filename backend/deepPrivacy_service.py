@@ -288,7 +288,7 @@ if __name__ == '__main__':
                 net.load_state_dict(torch.load(save_pth))
                 net.eval()
             else:
-                net =None
+                net = None
             
             target_hu_align_crop_tensor,mat_list,self_min_index = target_hu_inwhole(path, app, crop_size, spNorm, model, opt, mse)
             if target_hu_align_crop_tensor == None:

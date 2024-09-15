@@ -249,8 +249,9 @@ def generate():
 
     cv2.imwrite('test.png', image)
 
-    align_crop, id_nonorm = get_embedding_specific_person(image, simswap, crop_size, model)
-    
+    # align_crop, id_nonorm = get_embedding_specific_person(image, simswap, crop_size, model)
+    time.sleep(5)
+
     return jsonify('good'), 200
 
 if __name__ == '__main__':

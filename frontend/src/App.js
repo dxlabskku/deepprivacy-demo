@@ -129,11 +129,48 @@ const ResultPage = ({ path, tempFiles, options }) => {
         link.click();
         link.remove();
     }
+    const temp_files = [
+        [
+            './images/korea_onlyGen_closest_766.jpg',
+            './images/korea_onlyGen_closest_2433.jpg',
+            './images/korea_onlyGen_closest_4271.jpg',
+            './images/korea_onlyGen_closest_4571.jpg',
+            './images/korea_onlyGen_closest_7540.jpg',
+        ],
+        [
+            './images/korea_aihub_closest_16.jpg',
+            './images/korea_aihub_closest_272.jpg',
+            './images/korea_aihub_closest_356.jpg',
+            './images/korea_aihub_closest_819.jpg',
+            './images/korea_aihub_closest_1211.jpg',
+        ],
+        [
+            './images/korea_onlyGen_furthest_3324.jpg',
+            './images/korea_onlyGen_furthest_6422.jpg',
+            './images/korea_onlyGen_furthest_6943.jpg',
+            './images/korea_onlyGen_furthest_7737.jpg',
+            './images/korea_onlyGen_furthest_10577.jpg',    
+        ], 
+        [
+            './images/korea_aihub_furthest_2886.jpg',
+            './images/korea_aihub_furthest_3344.jpg',
+            './images/korea_aihub_furthest_6233.jpg',
+            './images/korea_aihub_furthest_7468.jpg',
+            './images/korea_aihub_furthest_8037.jpg',    
+        ], 
+        [
+            './images/korea_cel_closest_62.jpg',
+            './images/korea_cel_closest_124.jpg',
+            './images/korea_cel_closest_229.jpg',
+            './images/korea_cel_closest_230.jpg',
+            './images/korea_cel_closest_289.jpg',
+        ]
+    ]
 
     return (
         <Container sx={{zIndex: 3}} display='flex' flexDirection='column' justifyContent='center' alignItems='center'>
             <Grid container>
-                <Grid item xs={12} md={2}>
+                <Grid item xs={12} md={3}>
                     <Typography variant='h4'>Original image.</Typography>
                     <Box component='div' height='32px' />
                     <ImageList sx={{width: '80%'}} cols={1}>
@@ -145,13 +182,14 @@ const ResultPage = ({ path, tempFiles, options }) => {
                         </ImageListItem>
                     </ImageList>
                 </Grid>
-                <Grid item xs={12} md={10}>
+                <Grid item xs={12} md={9}>
                     <Typography variant='h4'>Converted images.</Typography>
                     <Box component='div' height='32px' />
                     <Grid container sx={{height: '50vh'}}>
-                        {tempFiles.map((files, index1) => (
-                            <Grid item md = {6} sm = {12}>
+                        {temp_files.map((files, index1) => (
+                            <Grid item md = {12} sm = {12}>
                                 <Typography variant='h5'>{options[index1]}</Typography>
+                                <hr />
                                 <ImageList sx={{width: '90%', paddingRight: '16px'}} cols={5} key={'image-generated-' + index1}>
                                     {files.map((file, index2) => (
                                         <ImageListItem key={'image-generated-' + index1 + '-' + index2}>
@@ -164,6 +202,7 @@ const ResultPage = ({ path, tempFiles, options }) => {
                                         </ImageListItem>
                                     ))}
                                 </ImageList>
+                                <div style={{width: '100%', height: '64px'}} />
                             </Grid>
                         ))}
                     </Grid>
@@ -175,7 +214,7 @@ const ResultPage = ({ path, tempFiles, options }) => {
 
 const App = () => {
     const [path, setPath] = useState('');
-    const options = ['closest-asian', 'closest-korean', 'furthest-asian', 'furthest-korean', 'celebrity']
+    const options = ['Closest - Asian', 'Closest - Korean', 'Furthest - Asian', 'Furthest - Korean', 'Celebrity']
     const tempFiles = [[path, path, path, path, path], [path, path, path, path, path], [path, path, path, path, path], [path, path, path, path, path], [path, path, path, path, path]]
 
     return (

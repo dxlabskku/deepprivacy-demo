@@ -25,6 +25,8 @@ import gc
 
 def lcm(a, b): return abs(a * b) / fractions.gcd(a, b) if a and b else 0
 
+device = torch.device('mps')
+
 transformer_Arcface = transforms.Compose([
     transforms.ToTensor(),
     transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
@@ -59,7 +61,7 @@ def config():
     logoclass = watermark_image('./simswaplogo/simswaplogo.png')
     model = create_model(opt)
     model.eval()
-    mse = torch.nn.MSELoss().cuda()
+    mse = torch.nn.MSELoss().to(device)
     spNorm = SpecificNorm()
 
     app = Face_detect_crop(name='antelope', root='./insightface_func/models')
@@ -67,13 +69,13 @@ def config():
     return app, opt, crop_size, model, mse, spNorm, logoclass
 
 def compute_embedding_distance(asain_face_emb, model, mse, specific_person_id_nonorm, index,target_id_list):
-    align_crop_tensor_arcnorm = asain_face_emb[target_id_list[index]].cuda()
+    align_crop_tensor_arcnorm = asain_face_emb[target_id_list[index]].to(device)
     align_crop_tensor_arcnorm_downsample = F.interpolate(align_crop_tensor_arcnorm, size=(112, 112))
     align_crop_id_nonorm = model.netArc(align_crop_tensor_arcnorm_downsample)
     return mse(align_crop_id_nonorm, specific_person_id_nonorm).detach().cpu().numpy()
 
 # def compute_embedding_distance_batch(target_id_list_batch, specific_person_id_nonorm, model, asain_face_emb):
-#     align_crop_tensor_arcnorm = torch.stack([asain_face_emb[idx].cuda() for idx in target_id_list_batch])
+#     align_crop_tensor_arcnorm = torch.stack([asain_face_emb[idx].to(device) for idx in target_id_list_batch])
 #     align_crop_tensor_arcnorm_downsample = F.interpolate(align_crop_tensor_arcnorm, size=(112, 112))
 #     align_crop_id_nonorm = model.netArc(align_crop_tensor_arcnorm_downsample)
 #     mse_values = torch.mean((align_crop_id_nonorm - specific_person_id_nonorm) ** 2, dim=1)
@@ -85,7 +87,7 @@ def process_batch(crops):
 
 def process_crop(spNorm, model, mse, b_align_crop, specific_person_id_nonorm):
     # print(b_align_crop.shape)
-    b_align_crop_tenor = _totensor(cv2.cvtColor(b_align_crop, cv2.COLOR_BGR2RGB))[None, ...].cuda()
+    b_align_crop_tenor = _totensor(cv2.cvtColor(b_align_crop, cv2.COLOR_BGR2RGB))[None, ...].to(device)
     b_align_crop_tenor_arcnorm = spNorm(b_align_crop_tenor)
     b_align_crop_tenor_arcnorm_downsample = F.interpolate(b_align_crop_tenor_arcnorm, size=(112, 112))
     b_align_crop_id_nonorm = model.netArc(b_align_crop_tenor_arcnorm_downsample)
@@ -102,7 +104,7 @@ def get_embedding_specific_person(pic_specific_path, app, crop_size, model):
     specific_person_align_crop_pil = Image.fromarray(cv2.cvtColor(specific_person_align_crop[0], cv2.COLOR_BGR2RGB))
     specific_person = transformer_Arcface(specific_person_align_crop_pil)
     specific_person = specific_person.view(-1, specific_person.shape[0], specific_person.shape[1], specific_person.shape[2])
-    specific_person = specific_person.cuda()
+    specific_person = specific_person.to(device)
     specific_person_downsample = F.interpolate(specific_person, size=(112, 112))
     specific_person_id_nonorm = model.netArc(specific_person_downsample)
     specific_person_id_norm = F.normalize(specific_person_id_nonorm, p=2, dim=1)
@@ -115,7 +117,7 @@ def target_hu_inwhole(img_pic_whole_path, app, crop_size, spNorm, model, opt, ms
     self_id_compare_values = [] 
     b_align_crop_tenor_list = []
     for b_align_crop in img_pic_align_crop_list:
-        b_align_crop_tenor = _totensor(cv2.cvtColor(b_align_crop,cv2.COLOR_BGR2RGB))[None,...].cuda()
+        b_align_crop_tenor = _totensor(cv2.cvtColor(b_align_crop,cv2.COLOR_BGR2RGB))[None,...].to(device)
         b_align_crop_tenor_arcnorm = spNorm(b_align_crop_tenor)
         b_align_crop_tenor_arcnorm_downsample = F.interpolate(b_align_crop_tenor_arcnorm, size=(112,112))
         b_align_crop_id_nonorm = model.netArc(b_align_crop_tenor_arcnorm_downsample)
@@ -148,7 +150,7 @@ def swap_deepfake(iscf, target_index, path, image_name, target_emb_name,
         swap_result_list.append(swap_result)
         b_align_crop_tenor_list.append(b_align_crop_tenor)
 
-    target_img_id = asain_face_emb[target_id_list[target_index]].cuda()
+    target_img_id = asain_face_emb[target_id_list[target_index]].to(device)
     target_img_id_downsample = F.interpolate(target_img_id, size=(112,112))
     latend_id = model.netArc(target_img_id_downsample)
     latend_id = F.normalize(latend_id, p=2, dim=1)
@@ -209,7 +211,7 @@ if __name__ == '__main__':
     female_emb_dir = ['./output/W/', './output/test_W', './output/celebrity/Female', './output/zold_aihub']
     pic_dir = './data/sample/'
     specific_gender = 'M'
-    target_emb_list = ['onlyGen','aihub']#,'cel']#,'oldaihub']
+    target_emb_list = ['onlyGen','aihub', 'cel']#,'oldaihub']
     num = 2
     start1 = time.time()
 
@@ -281,7 +283,7 @@ if __name__ == '__main__':
             if opt.use_mask:
                 n_classes = 19
                 net = BiSeNet(n_classes=n_classes)
-                net.cuda()
+                net.to(device)
                 save_pth = os.path.join('./parsing_model/checkpoint', '79999_iter.pth')
                 net.load_state_dict(torch.load(save_pth))
                 net.eval()

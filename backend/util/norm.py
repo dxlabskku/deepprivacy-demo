@@ -20,6 +20,6 @@ class SpecificNorm(nn.Module):
         mean = self.mean.expand([1, 3, x.shape[2], x.shape[3]])
         std = self.std.expand([1, 3, x.shape[2], x.shape[3]])
 
-        x = (x - mean) / std
+        x = (x.cpu() - mean.cpu()) / std.cpu()
 
         return x

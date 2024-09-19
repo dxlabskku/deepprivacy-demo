@@ -95,7 +95,7 @@ const WaitPage = ({ path }) => {
     return (
         <Container sx={{zIndex: 3}} display='flex' flexDirection='column' justifyContent='center' alignItems='center'>
             <Grid container>
-                <Grid item xs={12} md={2}>
+                <Grid item xs={12} md={3}>
                     <Typography variant='h4'>Original image.</Typography>
                     <Box component='div' height='32px' />
                     <ImageList sx={{width: '80%'}} cols={1}>
@@ -104,7 +104,7 @@ const WaitPage = ({ path }) => {
                         </ImageListItem>
                     </ImageList>
                 </Grid>
-                <Grid item xs={12} md={10}>
+                <Grid item xs={12} md={9}>
                     <Typography variant='h4'>Converted images.</Typography>
                     <Box component='div' height='32px' />
                     <Box component='article' height='50vh' display='flex' flexDirection='column' justifyContent='center' alignItems='center'>

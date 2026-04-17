@@ -1,25 +1,64 @@
 # DeepPrivacy Demo
 
-This repository includes the code for the demo of the advanced program for further research on the paper 'Customizing facial privacy on SNS: A framework for protecting users from
-strangers and stalkers' on CHI 2025 Late-Breaking Work.
+A relationship-aware face anonymization framework for social media, built with **SimSwap** and a web-based interface.
+This demo allows users to apply **different levels of facial anonymization depending on social relationship context** (e.g., self, close friends, acquaintances, strangers) and **personal privacy preferences**.
 
+This repository contains the demo system for the framework on customizable facial privacy for SNS environments.
+---
 
-### 1. File Structure
+## Overview
 
-```sh
+People often want different privacy protections for different viewers on social media.
+For example, a user may want:
+
+- minimal modification for close friends,
+- moderate anonymization for acquaintances,
+- stronger anonymization for strangers or potentially harmful viewers.
+
+This project implements a **selective face anonymization pipeline** that supports:
+
+- **relationship-dependent anonymization**
+- **user-selectable privacy levels**
+- **web-based preview and interaction**
+- **face transformation using SimSwap-based anonymization components**
+
+Rather than using a one-size-fits-all privacy mechanism, the framework is designed to support **socially adaptive privacy control** in SNS-like environments.
+
+---
+
+## Key Features
+
+- **Relationship-aware anonymization**
+  - Apply different transformation strengths depending on the viewer category or social relationship.
+
+- **Preference-based privacy customization**
+  - Users can choose how strongly their face should be transformed.
+
+- **SNS-style demo interface**
+  - Includes a React-based frontend for interactive testing in a social-media-like environment.
+
+- **Backend anonymization pipeline**
+  - Flask-based server that handles face processing and transformation.
+
+- **Preview-oriented workflow**
+  - Designed for demonstration, prototyping, and user-study scenarios where people compare privacy settings and transformed outputs.
+
+---
+
+## Repository Structure
+
+The repository is organized into a frontend and a backend. The current structure includes a React-based web application and a Flask-based backend server.  [oai_citation:2‡GitHub](https://github.com/dxlabskku/deepprivacy-demo)
+
+```text
 .
 ├── backend
 │   ├── arcface_model
 │   ├── checkpoints
-│   ├── cog.yaml
 │   ├── crop_224
 │   ├── data
 │   ├── demo_file
 │   ├── docs
-│   ├── download-weights.sh
-│   ├── emojis
 │   ├── insightface_func
-│   ├── LICENSE
 │   ├── main.py
 │   ├── models
 │   ├── options
@@ -30,40 +69,9 @@ strangers and stalkers' on CHI 2025 Late-Breaking Work.
 │   ├── simswaplogo
 │   └── util
 ├── React_instagram_clone
-│   ├── base-tsconfig.json
-│   ├── build
-│   ├── node_modules
-│   ├── package.json
-│   ├── package-lock.json
 │   ├── public
-│   ├── README.md
 │   ├── src
-│   └── tsconfig.json
+│   ├── package.json
+│   └── ...
 ├── README.md
 └── requirements.txt
-```
-
-The frontend directory contains the code for React-based web application, and the backend directory contains the code for Flask-based server-side application. If you want to make a fix, please do not forget to ```npm run build``` in the frontend directory before executing the ```python main.py``` in the backend directory.
-
-### 2. Prerequisites
-The demo requires the following software and libraries:
-```sh
-pip install -r requirements.txt
-```
-
-Also, you need to download several pre-trained models to run the demo. You can download such weights following the instructions in the [SimSwap](https://github.com/neuralchen/SimSwap) repository.
-
-### 3. How to start
-
-To start this application, you have to execute follow commands.
-
-```sh
-cd backends
-python main.py
-```
-
-Then, you can access to the demo page from your browser.
-
-```sh
-http://localhost:8888/
-```
